@@ -985,7 +985,7 @@ defmodule Spear do
 
   ## Options
 
-  * `:json_encode!` - (default: `Jason.encode!/1`) a 1-arity JSON encoding
+  * `:json_encode!` - (default: `:json.encode/1`) a 1-arity JSON encoding
     function used to serialize the event. This event must be JSON encoded
     in order for the EventStoreDB to consider it valid.
 
@@ -1012,7 +1012,7 @@ defmodule Spear do
 
   def set_global_acl(conn, %Spear.Acl{} = user_acl, %Spear.Acl{} = system_acl, opts) do
     {json_encode!, opts} = Keyword.pop(opts, :json_encode!)
-    json_encode! = json_encode! || (&Jason.encode!/1)
+    json_encode! = json_encode! || (&:json.encode/1)
 
     Spear.Writing.build_global_acl_event(user_acl, system_acl, json_encode!)
     |> List.wrap()

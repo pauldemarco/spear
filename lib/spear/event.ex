@@ -151,7 +151,7 @@ defmodule Spear.Event do
   In order to use these fields, you must pass them as custom metadata:
 
   ```elixir
-  iex> custom_metadata =  Jason.encode!(%{"$correlationId" => "...", "$causationId" => "..."})
+  iex> custom_metadata =  :json.encode(%{"$correlationId" => "...", "$causationId" => "..."})
   ...> Spear.Event.new("my_event", %{"id" => 1}, custom_metadata: custom_metadata)
   %Spear.Event{
     id: "d77c1abc-0200-4804-81cd-eca726911166",
@@ -217,7 +217,7 @@ defmodule Spear.Event do
   The default is
 
   ```elixir
-  %{"application/json" => &Jason.encode!/1}
+  %{"application/json" => &:json.encode/1}
   ```
 
   The `t:Spear.Event.t/0`'s `.metadata.content_type` value will be searched
@@ -247,7 +247,7 @@ defmodule Spear.Event do
           tuple()
   def to_proposed_message(
         event,
-        encoder_mapping \\ %{"application/json" => &Jason.encode!/1},
+        encoder_mapping \\ %{"application/json" => &:json.encode/1},
         # coveralls-ignore-start
         type \\ :append
         # coveralls-ignore-stop
@@ -298,7 +298,7 @@ defmodule Spear.Event do
   * `:link?` - (default: `false`) forces returning the body of the link event
     for events read from projected streams. Has no effect on events from non-
     projected streams.
-  * `:json_decoder` - (default: `Jason.decode!/2`) a 2-arity function to use
+  * `:json_decoder` - (default: `:json.decode/2`) a 2-arity function to use
     for events with a `"content-type"` of `"application/json"`.
 
   All remaining options passed as `opts` other than `:link?` and
@@ -396,11 +396,11 @@ defmodule Spear.Event do
     # metadata comes in as [{k, v}, ..]
     metadata = Map.new(metadata)
     content_type = Map.get(metadata, "content-type")
-    {decoder, remaining_opts} = Keyword.pop(opts, :json_decoder, &Jason.decode!/2)
+    {decoder, _remaining_opts} = Keyword.pop(opts, :json_decoder, &:json.decode/1)
 
     maybe_decoded_body =
       if content_type == "application/json" do
-        decoder.(body, remaining_opts)
+        decoder.(body)
       else
         body
       end

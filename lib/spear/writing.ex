@@ -159,7 +159,7 @@ defmodule Spear.Writing do
   defp map_batch_append_messages(%Spear.Event{} = event) do
     Spear.Event.to_proposed_message(
       event,
-      %{"application/json" => &Jason.encode!/1},
+      %{"application/json" => &:json.encode/1},
       :batch_append
     )
   end
